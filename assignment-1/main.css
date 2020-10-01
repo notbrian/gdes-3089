@@ -1,0 +1,22 @@
+html,
+body {
+  background-color: black;
+  margin: 0;
+  padding: 0;
+}
+
+canvas {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#instructions {
+  color: white;
+  position: absolute;
+  font-family: Arial, Helvetica, sans-serif;
+  left: 0;
+  right: 0;
+  bottom: 20px;
+  text-align: center;
+}
