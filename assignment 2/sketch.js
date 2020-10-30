@@ -35,7 +35,7 @@ class Person {
 
   update() {
     // Update velocity
-    this.velocity.add(this.acceleration);
+    this.velocity.add(this.seek(createVector(mouseX, mouseY)));
     // Limit speed
     this.velocity.limit(this.maxspeed);
     this.position.add(this.velocity);
@@ -63,11 +63,9 @@ class Person {
   render() {
     // Draw a triangle rotated in the direction of velocity
     let theta = this.velocity.heading() + radians(90);
-    fill(127);
+    fill(color(`hsl(${this.strokeCol},100%, 68%)`));
     stroke(color(`hsl(${this.strokeCol},100%, 68%)`));
-
-    strokeWeight(sin(millis() / 5000) * 10 + 1);
-    // strokeWeight(5);
+    strokeWeight(sin(millis() / 5000) * 5 + 5);
     push();
     translate(this.position.x, this.position.y);
     rotate(theta);
