@@ -2,19 +2,38 @@
 // Concepts referenced from https://natureofcode.com/book/chapter-6-autonomous-agents/
 
 const agents = [];
+let jobPoint;
+let homePoint;
 
 function setup() {
   createCanvas(1000, 600);
-  for (let i = 0; i < 300; i++) {
-    agents.push(new Person(width / 2, height / 2));
+
+  homePoint = createVector(width * 0.1, height / 2);
+  jobPoint = createVector(width * 0.85, height / 2);
+  for (let i = 0; i < 1; i++) {
+    agents.push(new Person(homePoint.x, homePoint.y));
   }
 }
 
 function draw() {
   background(255);
+  noStroke();
+  push();
+  fill(0, 255, 0);
+  translate(jobPoint.x, jobPoint.y);
+  rectMode(CENTER);
+  rect(0, 0, 50, 50);
+  pop();
+
+  push();
+  fill(0, 0, 255);
+  translate(homePoint.x, homePoint.y);
+  rectMode(CENTER);
+  rect(0, 0, 50, 50);
+  pop();
   for (let i = 0; i < agents.length; i++) {
     agents[i].update();
-    agents[i].borders();
+    // agents[i].borders();
     agents[i].render();
   }
 }
@@ -23,13 +42,15 @@ class Person {
   constructor(x, y) {
     this.acceleration = createVector(0, 0);
     this.velocity = createVector(random(-1, 1), random(-1, 1));
-    this.position = createVector(random(0, width), random(0, height));
+    this.position = createVector(x, y);
     this.r = 15.0;
-    this.maxspeed = 20; // Maximum speed
+    this.maxspeed = 3; // Maximum speed
     this.maxforce = 0.05; // Maximum steering force
     this.strokeCol = 0;
-    this.infected = Math.random() > 0.99 ? true : false;
+    // this.infected = Math.random() > 0.99 ? true : false;
+    this.infected = false;
     this.mask = Math.random() > 0.5 && this.infected === false ? true : false;
+    this.food = 0;
   }
 
   applyForce(force) {
@@ -37,10 +58,27 @@ class Person {
   }
 
   update() {
-    // Update velocity
-    this.acceleration
-      .add(this.seek(createVector(width / 2, height / 2)))
-      .mult(0.01);
+    // Main behaviour states
+    if (this.food == 0) {
+      this.acceleration.add(this.seek(jobPoint)).mult(1);
+    } else {
+      this.acceleration.add(this.seek(homePoint)).mult(1);
+    }
+
+    let jobDist = p5.Vector.dist(this.position, jobPoint);
+    if (jobDist < 50) {
+      if (this.food < 100) {
+        this.food++;
+      }
+    }
+
+    let homeDist = p5.Vector.dist(this.position, homePoint);
+    if (homeDist < 50) {
+      if (this.food > 0) {
+        this.food--;
+      }
+    }
+
     this.acceleration.add(this.seperate()).mult(2);
     this.velocity.add(this.acceleration);
     // Limit speed
@@ -61,8 +99,9 @@ class Person {
     const d = desired.mag();
     desired.normalize();
 
-    if (d < 100) {
-      const m = map(d, 0, 100, 0, this.maxspeed);
+    if (d < 200) {
+      const m = map(d, 0, 200, 0, this.maxspeed);
+      // console.log(m);
       desired.mult(m);
     } else {
       desired.mult(this.maxspeed);
@@ -77,6 +116,7 @@ class Person {
   render() {
     // Draw a triangle rotated in the direction of velocity
     // let theta = this.velocity.heading() + radians(90);
+    push();
     if (this.infected) {
       fill(255, 0, 0);
     } else if (this.mask) {
@@ -85,18 +125,17 @@ class Person {
       fill(167);
     }
     stroke(255);
-    push();
     translate(this.position.x, this.position.y);
     circle(0, 0, this.r);
     stroke(0, 0, 0, 30);
     fill(255, 241, 122, 50);
     circle(0, 0, 30);
-    // rotate(theta);
-    // beginShape();
-    // vertex(0, -this.r * 2);
-    // vertex(-this.r, this.r * 2);
-    // vertex(this.r, this.r * 2);
-    // endShape(CLOSE);
+    textAlign(CENTER);
+    fill(255, 0, 0);
+    textSize(15);
+    text(this.infected ? "INFECTED" : "", 0, -10);
+    fill(0, map(this.food, 0, 100, 0, 255), 0);
+    text(this.food > 0 ? this.food : "", 0, 30);
     pop();
   }
 
