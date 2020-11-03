@@ -328,3 +328,7 @@ function mousePressed(e) {
     agents.push(new Person(mouseX, mouseY));
   }
 }
+
+document.oncontextmenu = function () {
+  return false;
+};
