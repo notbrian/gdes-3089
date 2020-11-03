@@ -246,7 +246,7 @@ class Person {
       noStroke();
       textAlign(CENTER);
       fill(255, 0, 0);
-      textSize(15);
+      textSize(12);
       text("INFECTED", 0, -10);
     }
 
