@@ -308,7 +308,6 @@ class Person {
 
 // Infect a person by clicking with your mouse
 function mousePressed(e) {
-  e.preventDefault();
   if (mouseButton === "left") {
     for (let i = 0; i < agents.length; i++) {
       let d = p5.Vector.dist(createVector(mouseX, mouseY), agents[i].position);
