@@ -151,7 +151,7 @@ class Person {
 
     // Home logic
     let homeDist = p5.Vector.dist(this.position, homePoint);
-    if (homeDist < 100) {
+    if (homeDist < 50) {
       if (this.food > 0) {
         this.food--;
       }
