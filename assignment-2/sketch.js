@@ -12,6 +12,7 @@ let infectedText;
 let recoveredText;
 let infectedCount = 0;
 let recoveredCount = 0;
+let canvas;
 
 function calcSeperationText(value) {
   let text = "";
@@ -33,8 +34,7 @@ function calcSeperationText(value) {
 }
 
 function setup() {
-  createCanvas(1000, 800);
-
+  canvas = createCanvas(1000, 800);
   // Create agents
   for (let i = 0; i < 220; i++) {
     agents.push(new Person(random(20, width / 2), random(20, height * 0.8)));
@@ -79,7 +79,8 @@ function setup() {
 
 function draw() {
   seperatationSliderText.html(calcSeperationText(seperationSlider.value()));
-  background(255);
+  background(255, map(sin(millis() / 3000), -1, 1, 0, 80));
+  console.log(sin(millis() / 3000) * 0.5 + 0.5);
   noStroke();
 
   // Draw Job
@@ -327,7 +328,3 @@ function mousePressed(e) {
     agents.push(new Person(mouseX, mouseY));
   }
 }
-
-document.oncontextmenu = function () {
-  return false;
-};
