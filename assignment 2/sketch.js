@@ -35,9 +35,12 @@ function calcSeperationText(value) {
 function setup() {
   createCanvas(1000, 800);
 
+  // Create agents
   for (let i = 0; i < 220; i++) {
     agents.push(new Person(random(width), random(height)));
   }
+
+  // Create HTML elements
   createP("Left click on a person to infect them.").style(
     "text-align",
     "center"
@@ -66,6 +69,7 @@ function setup() {
     "#socialControls"
   );
 
+  // Create vector points for key points
   homePoint = createVector(width * 0.05, height / 2);
   jobPoint = createVector(width * 0.95, height / 2);
   hospitalPoint = createVector(width / 2, height * 0.95);
@@ -75,9 +79,8 @@ function draw() {
   seperatationSliderText.html(calcSeperationText(seperationSlider.value()));
   background(255);
   noStroke();
-  // translate(width / 2, height / 2);
-  // scale(0.5);
-  // Job
+
+  // Draw Job
   push();
   fill(0, 255, 0);
   translate(jobPoint.x, jobPoint.y);
@@ -87,7 +90,7 @@ function draw() {
   text("Job", -70, textAscent() / 2);
   pop();
 
-  // Home
+  // Draw Home
   push();
   fill(0, 0, 255);
   translate(homePoint.x, homePoint.y);
@@ -97,7 +100,7 @@ function draw() {
   text("Home", 35, textAscent() / 2);
   pop();
 
-  // Hospital
+  // Draw Hospital
   push();
   fill(255, 0, 0);
   translate(hospitalPoint.x, hospitalPoint.y);
@@ -107,13 +110,14 @@ function draw() {
   text("Hospital", 60, textAscent() / 2);
   pop();
 
-  // Agents
+  // Agents update
   for (let i = 0; i < agents.length; i++) {
     agents[i].update();
     agents[i].render();
   }
 }
 
+// Agent class
 class Person {
   constructor(x, y) {
     this.acceleration = createVector(0, 0);
@@ -127,25 +131,14 @@ class Person {
     this.infectedTimer = null;
     this.infected = false;
     // this.mask = Math.random() > 0.5 && this.infected === false ? true : false;
-    this.mask = false;
+    // this.mask = false;
     this.food = 0;
     this.collecting = true;
     this.recovered = false;
   }
 
   update() {
-    // Main behaviour states
-    if (!this.infected) {
-      if (this.collecting) {
-        this.acceleration.add(this.seek(jobPoint)).mult(1);
-      } else {
-        this.acceleration.add(this.seek(homePoint)).mult(1);
-      }
-    } else {
-      this.acceleration.add(this.seek(hospitalPoint)).mult(1);
-    }
-
-    // Job
+    // Job logic
     let jobDist = p5.Vector.dist(this.position, jobPoint);
     if (jobDist < 50) {
       if (this.food < 100) {
@@ -156,7 +149,7 @@ class Person {
       }
     }
 
-    // Home
+    // Home logic
     let homeDist = p5.Vector.dist(this.position, homePoint);
     if (homeDist < 100) {
       if (this.food > 0) {
@@ -167,8 +160,9 @@ class Person {
       }
     }
 
-    // Hospital
+    // Hospital logic
     let hospitalDist = p5.Vector.dist(this.position, hospitalPoint);
+    // If infected and inside the hospitals range, start a 3 second time to recovery
     if (hospitalDist < 50 && this.infectedTimer == null && this.infected) {
       this.infectedTimer = setTimeout(() => {
         this.infected = false;
@@ -189,21 +183,29 @@ class Person {
       }, 3000);
     }
 
-    // this.acceleration.add(this.seperate()).mult(1);
+    // Main behaviour states
+    // If not infected, do regular behavior of going to work
+    // Else go to the hospital
+    if (!this.infected) {
+      if (this.collecting) {
+        this.acceleration.add(this.seek(jobPoint)).mult(1);
+      } else {
+        this.acceleration.add(this.seek(homePoint)).mult(1);
+      }
+    } else {
+      this.acceleration.add(this.seek(hospitalPoint)).mult(1);
+    }
+
     this.velocity.add(this.acceleration);
-    // Limit speed
     this.velocity.limit(this.maxspeed);
     this.position.add(this.velocity);
-    // Reset accelertion to 0 each cycle
+    // Reset acceleration to 0 each cycle
     this.acceleration.mult(0);
-    // this.strokeCol += 1;
-    // if (this.strokeCol > 360) {
-    //   this.strokeCol = 0;
-    // }
   }
 
   // A method that calculates and applies a steering force towards a target
   // STEER = DESIRED MINUS VELOCITY
+  // Code referenced from p5 flocking example
   seek(target) {
     let desired = p5.Vector.sub(target, this.position); // A vector pointing from the location to the target
     const d = desired.mag();
@@ -211,7 +213,6 @@ class Person {
 
     if (d < 200) {
       const m = map(d, 0, 200, 0, this.maxspeed);
-      // console.log(m);
       desired.mult(m);
     } else {
       desired.mult(this.maxspeed);
@@ -226,8 +227,6 @@ class Person {
   }
 
   render() {
-    // Draw a triangle rotated in the direction of velocity
-    // let theta = this.velocity.heading() + radians(90);
     push();
     if (this.infected) {
       fill(255, 0, 0);
@@ -239,16 +238,21 @@ class Person {
     stroke(255);
     translate(this.position.x, this.position.y);
     circle(0, 0, this.d);
-    stroke(0, 0, 0, 30);
-    textAlign(CENTER);
-    fill(255, 0, 0);
-    textSize(15);
-    text(this.infected ? "INFECTED" : "", 0, -10);
-    // fill(0, map(this.food, 0, 100, 0, 255), 0);
-    // text(this.food > 0 ? this.food : "", 0, 30);
+
+    // Infected Text
+    if (this.infected) {
+      noStroke();
+      textAlign(CENTER);
+      fill(255, 0, 0);
+      textSize(15);
+      text("INFECTED", 0, -10);
+    }
+
     pop();
   }
 
+  // Seperate from other people function
+  // Also referenced from flocking example
   seperate() {
     let desiredseparation = seperationSlider.value();
     let steer = createVector(0, 0);
@@ -266,11 +270,10 @@ class Person {
       }
 
       // If too close, infect other agents
-      // Barring if they have a mask, recovered, or already infected
+      // Barring if they recovered, or already infected
       if (
         this.infected &&
         d < 20 &&
-        !agents[i].mask &&
         !agents[i].recovered &&
         !agents[i].infected
       ) {
@@ -300,6 +303,7 @@ class Person {
   }
 }
 
+// Infect a person by clicking with your mouse
 function mouseReleased(e) {
   if (mouseButton === "left") {
     for (let i = 0; i < agents.length; i++) {
