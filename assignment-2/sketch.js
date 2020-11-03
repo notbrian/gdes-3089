@@ -41,10 +41,9 @@ function setup() {
   }
 
   // Create HTML elements
-  createP("Left click on a person to infect them.").style(
-    "text-align",
-    "center"
-  );
+  createP(
+    "Left click on a person to infect them. Right click to add a new person."
+  ).style("text-align", "center");
   createP(
     "Change the slider below to control the amount of social distancing"
   ).style("text-align", "center");
@@ -307,7 +306,8 @@ class Person {
 }
 
 // Infect a person by clicking with your mouse
-function mouseReleased(e) {
+function mousePressed(e) {
+  e.preventDefault();
   if (mouseButton === "left") {
     for (let i = 0; i < agents.length; i++) {
       let d = p5.Vector.dist(createVector(mouseX, mouseY), agents[i].position);
@@ -322,4 +322,12 @@ function mouseReleased(e) {
       }
     }
   }
+
+  if (mouseButton === "right") {
+    agents.push(new Person(mouseX, mouseY));
+  }
 }
+
+document.oncontextmenu = function () {
+  return false;
+};
