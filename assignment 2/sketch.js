@@ -37,7 +37,7 @@ function setup() {
 
   // Create agents
   for (let i = 0; i < 220; i++) {
-    agents.push(new Person(random(width), random(height)));
+    agents.push(new Person(random(20, width / 2), random(20, height * 0.8)));
   }
 
   // Create HTML elements
