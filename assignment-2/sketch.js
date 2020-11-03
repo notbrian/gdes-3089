@@ -70,9 +70,9 @@ function setup() {
   );
 
   // Create vector points for key points
-  homePoint = createVector(width * 0.05, height / 2);
-  jobPoint = createVector(width * 0.95, height / 2);
-  hospitalPoint = createVector(width / 2, height * 0.95);
+  homePoint = createVector(width * 0.05, height * 0.2);
+  jobPoint = createVector(width * 0.95, height * 0.2);
+  hospitalPoint = createVector(width / 2, height * 0.9);
 }
 
 function draw() {
