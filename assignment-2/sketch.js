@@ -41,8 +41,12 @@ function setup() {
   }
 
   // Create HTML elements
+  createP("Left click on a person to infect them.").style(
+    "text-align",
+    "center"
+  );
   createP(
-    "Left click on a person to infect them. Change the slider below to control the amount of social distancing."
+    "Change the slider below to control the amount of social distancing"
   ).style("text-align", "center");
   createDiv().id("bottomContainer");
 
