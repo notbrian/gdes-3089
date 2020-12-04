@@ -23,3 +23,7 @@ canvas {
   margin-right: auto; */
   border: 1px black solid;
 }
+
+img {
+  width: 700px;
+}

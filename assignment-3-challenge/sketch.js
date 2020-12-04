@@ -42,11 +42,13 @@ function preload() {
 
 function setup() {
   canvas = createCanvas(580, 790);
+  background(60);
   // loadingGif.parent(canvas);
   yourLevel = generateLevel("left");
   unimateLevel = generateLevel("right");
   correctIndex = Math.round(random(0, yourLevel.length - 1));
   unimateIndex = Math.round(random(0, yourLevel.length - 1));
+  // introScreen();
 }
 
 function draw() {
@@ -218,6 +220,10 @@ function challenge() {
   text("You", width / 4, 120);
   text("WILHELM", width - width / 4, 120);
   textAlign(CENTER, CENTER);
+  text(timeLeft, width / 2, 50);
+  textSize(35);
+  text(yourScore, width / 4, 175);
+  text(unimateScore, width - width / 4, 175);
   pop();
   push();
   noFill();
@@ -225,10 +231,7 @@ function challenge() {
   strokeWeight(4);
   ellipse(width / 2, 47, 75);
   pop();
-  text(timeLeft, width / 2, 50);
-  textSize(35);
-  text(yourScore, width / 4, 175);
-  text(unimateScore, width - width / 4, 175);
+
   rectMode(CORNER);
   imageMode(CORNER);
   for (let i = 0; i < yourLevel.length; i++) {
